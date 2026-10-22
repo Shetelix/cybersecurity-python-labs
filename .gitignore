@@ -1,0 +1,15 @@
+# Віртуальне середовище
+.venv/
+venv/
+# Кеш Python та звіти Ruff
+__pycache__/
+*.pyc
+.ruff_cache/
+# Файли з даними (можуть містити реальні хеші/логи)
+labs/lab01/data/users.csv
+labs/lab01/data/log.json
+# Системні файли
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
