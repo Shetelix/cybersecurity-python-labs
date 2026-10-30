@@ -13,3 +13,6 @@ labs/lab01/data/log.json
 Thumbs.db
 .idea/
 .vscode/
+
+# Звіти ЛР №2 (генеруються програмою)
+labs/lab02/reports/
