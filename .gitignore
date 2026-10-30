@@ -16,3 +16,8 @@ Thumbs.db
 
 # Звіти ЛР №2 (генеруються програмою)
 labs/lab02/reports/
+# База SQLite ЛР №3 (створюється програмою)
+labs/lab03/data/*.sqlite3
+labs/lab03/data/*.sqlite3-*
+labs/lab03/data/*.db
+labs/lab03/data/*.db-*
