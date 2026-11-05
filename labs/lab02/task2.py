@@ -17,7 +17,7 @@ import re
 from collections import Counter
 from collections.abc import Iterator
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 logger = logging.getLogger("lab02.dns")
@@ -102,6 +102,12 @@ def load_blacklist(path: Path) -> set[str]:
 def parse_row(line_no: int, row: dict[str, str]) -> DnsRecord:
     """Перетворити рядок CSV на DnsRecord або підняти ValueError."""
     timestamp = datetime.fromisoformat(row["Timestamp"].strip())
+    # Як у завданні 1: увесь час зберігається в UTC з часовим поясом.
+    # Без цього рядок із поясом (+02:00) і без нього не можна порівняти.
+    if timestamp.tzinfo is None:
+        timestamp = timestamp.replace(tzinfo=timezone.utc)
+    else:
+        timestamp = timestamp.astimezone(timezone.utc)
     client_ip = row["ClientIP"].strip()
     if not IPV4_RE.fullmatch(client_ip):
         raise ValueError(f"некоректна IP-адреса {client_ip!r}")
@@ -131,7 +137,7 @@ def iter_records(path: Path, result: AnalysisResult) -> Iterator[DnsRecord]:
         for line_no, row in enumerate(reader, start=2):
             try:
                 yield parse_row(line_no, row)
-            except (ValueError, KeyError, AttributeError) as exc:
+            except (ValueError, KeyError, AttributeError, TypeError) as exc:
                 result.skipped += 1
                 logger.warning("Line %d skipped: %s", line_no, exc)
 
@@ -322,7 +328,7 @@ def run(args: argparse.Namespace) -> int:
         )
         logger.info("Parsing DNS log file %s...", display_path(args.dns_log))
         result = analyze(args.dns_log, blacklist, args.min_domain_len)
-    except (OSError, UnicodeDecodeError, ValueError) as exc:
+    except (OSError, UnicodeDecodeError, ValueError, TypeError) as exc:
         logger.error("Cannot analyze log: %s", exc)
         return 1
 
